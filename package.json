@@ -10,7 +10,7 @@
   "scripts": {
     "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "build:dist": "babel src --out-dir dist --extensions \".ts,.tsx\"",
-    "build": "run-s build:types build:dist"
+    "build": "run-p build:types build:dist"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.0",
