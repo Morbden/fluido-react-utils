@@ -1,7 +1,7 @@
 {
   "name": "@fluido/react-utils",
   "version": "0.1.2",
-  "description": "FLuido webapp utils",
+  "description": "Fluido webapp utils",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "private": false,
