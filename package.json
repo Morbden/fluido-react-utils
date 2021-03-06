@@ -1,16 +1,26 @@
 {
   "name": "@fluido/react-utils",
   "version": "0.1.2",
-  "description": "Fluido webapp utils",
+  "description": "FLuido webapp utils",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "keywords": [],
-  "author": "Morbden <ren.gsg@gmail.com>",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Morbden/fluido-react-utils.git"
+  },
+  "keywords": [
+    "fluido",
+    "utils",
+    "react"
+  ],
+  "author": "Morbden",
   "license": "MIT",
   "scripts": {
     "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "build:dist": "babel src --out-dir dist --extensions \".ts,.tsx\"",
-    "build": "run-p build:types build:dist"
+    "build": "run-p build:types build:dist",
+    "pub": "npm publish --access public"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.0",
