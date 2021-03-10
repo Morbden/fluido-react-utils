@@ -1,6 +1,6 @@
 {
   "name": "@fluido/react-utils",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Fluido webapp utils",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,8 +26,8 @@
     "deep-equal": "^2.0.5",
     "deepmerge": "^4.2.2",
     "express-json-validator-middleware": "^2.1.1",
-    "i18next": "^19.9.1",
-    "react-i18next": "^11.8.8",
+    "i18next": "^19.9.2",
+    "react-i18next": "^11.8.9",
     "uid": "^2.0.0"
   },
   "peerDependencies": {
@@ -40,8 +40,8 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.11",
-    "@types/node": "^14.14.31",
-    "@types/react": "^17.0.2",
+    "@types/node": "^14.14.33",
+    "@types/react": "^17.0.3",
     "firebase": "^8.2.10",
     "firebase-admin": "^9.5.0",
     "next": "^10.0.8",
