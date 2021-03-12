@@ -1,3 +1,4 @@
+import deepmerge from 'deepmerge'
 import { useEffect, useState } from 'react'
 import { fetchAPI } from './fetch'
 
@@ -7,20 +8,41 @@ interface NextStaticPropsReturn {
   notFound?: boolean
 }
 
-interface AnyFunction {
-  (): any | Promise<any>
+interface ComputeFunctionParams {
+  params?: {
+    [key: string]: any
+  }
+  preview?: boolean
+  previewData?: any
+  locale?: string
+  locales?: string[]
+  defaultLocale?: string
+}
+
+interface ComputeFunction {
+  (data: ComputeFunctionParams): any | Promise<any>
 }
 
 interface JoinStaticPropsType {
-  (...fns: [any | AnyFunction]): () => Promise<NextStaticPropsReturn>
+  (...fns: [any | ComputeFunction]): (
+    data: ComputeFunctionParams,
+  ) => Promise<NextStaticPropsReturn>
 }
 interface GetStaticFetchType {
-  (name: string, uri: RequestInfo, opt?: RequestInit): () => Promise<{
+  (
+    name: string,
+    uri: RequestInfo,
+    opt?: (data?: ComputeFunctionParams) => RequestInit,
+  ): (
+    data: ComputeFunctionParams,
+  ) => Promise<{
     [key: string]: any
   }>
 }
 interface GetStaticInternalType {
-  (name: string, fn: () => any | Promise<any>): () => Promise<{
+  (name: string, fn: (data: ComputeFunctionParams) => any | Promise<any>): (
+    data: ComputeFunctionParams,
+  ) => Promise<{
     [key: string]: any
   }>
 }
@@ -39,11 +61,11 @@ export const joinStaticProps: JoinStaticPropsType = (...fns) => {
   if (typeof fns[fns.length - 1] === 'object') {
     config = fns.pop()
   }
-  return async () => {
+  return async (data) => {
     try {
-      const results = await Promise.all(fns.map((fn) => fn()))
+      const results = await Promise.all(fns.map((fn) => fn(data)))
       return {
-        props: results.reduce((prev, cur) => Object.assign(prev, cur), {}),
+        props: results.reduce((prev, cur) => deepmerge(prev, cur), {}),
         revalidate: 1,
         ...config,
       }
@@ -59,14 +81,14 @@ export const joinStaticProps: JoinStaticPropsType = (...fns) => {
 }
 
 export const getStaticFetch: GetStaticFetchType = (name, uri, opt) => {
-  return async () => {
-    const result = await fetchAPI(uri, opt)
+  return async (data) => {
+    const result = await fetchAPI(uri, opt(data))
     return { [name]: result[1] }
   }
 }
 
 export const getStaticInternal: GetStaticInternalType = (name, fn) => {
-  return async () => ({ [name]: await Promise.resolve(fn()) })
+  return async (data) => ({ [name]: await Promise.resolve(fn(data)) })
 }
 
 export const promiseDelay: PromiseDelayType = (time) => {
