@@ -7,8 +7,12 @@ interface NextStaticPropsReturn {
   notFound?: boolean
 }
 
+interface AnyFunction {
+  (): any | Promise<any>
+}
+
 interface JoinStaticPropsType {
-  (...fns: [() => any | any]): () => Promise<NextStaticPropsReturn>
+  (...fns: [any | AnyFunction]): () => Promise<NextStaticPropsReturn>
 }
 interface GetStaticFetchType {
   (name: string, uri: RequestInfo, opt?: RequestInit): () => Promise<{
