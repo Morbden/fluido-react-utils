@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { fetchAPI } from './fetch'
 
 interface NextStaticPropsReturn {
-  props: { [key: string]: any }
+  props?: { [key: string]: any }
   revalidate?: number
+  notFound?: boolean
 }
 
 interface JoinStaticPropsType {
@@ -35,11 +36,20 @@ export const joinStaticProps: JoinStaticPropsType = (...fns) => {
     config = fns.pop()
   }
   return async () => {
-    const results = await Promise.all(fns.map((fn) => fn()))
-    return {
-      props: results.reduce((prev, cur) => Object.assign(prev, cur), {}),
-      revalidate: 1,
-      ...config,
+    try {
+      const results = await Promise.all(fns.map((fn) => fn()))
+      return {
+        props: results.reduce((prev, cur) => Object.assign(prev, cur), {}),
+        revalidate: 1,
+        ...config,
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        revalidate: 5,
+        notFound: true,
+        ...config,
+      }
     }
   }
 }
