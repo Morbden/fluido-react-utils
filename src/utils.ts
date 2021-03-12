@@ -24,7 +24,7 @@ interface ComputeFunction {
 }
 
 interface JoinStaticPropsType {
-  (...fns: [any | ComputeFunction]): (
+  (...fns: any[] | ComputeFunction[]): (
     data: ComputeFunctionParams,
   ) => Promise<NextStaticPropsReturn>
 }
