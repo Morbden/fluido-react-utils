@@ -62,7 +62,7 @@ export const getStaticFetch: GetStaticFetchType = (name, uri, opt) => {
 }
 
 export const getStaticInternal: GetStaticInternalType = (name, fn) => {
-  return async () => ({ [name]: fn() })
+  return async () => ({ [name]: await Promise.resolve(fn()) })
 }
 
 export const promiseDelay: PromiseDelayType = (time) => {
