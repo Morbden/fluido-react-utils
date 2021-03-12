@@ -16,7 +16,7 @@ interface GetStaticFetchType {
   }>
 }
 interface GetStaticInternalType {
-  (name: string, fn: () => any): () => Promise<{
+  (name: string, fn: () => any | Promise<any>): () => Promise<{
     [key: string]: any
   }>
 }
