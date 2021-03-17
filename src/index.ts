@@ -1,5 +1,5 @@
 import * as api from './api'
-import { fetchAPI } from './fetch'
+import { fetchAPI, genDefaultFetchAPI } from './fetch'
 import loadI18Next from './i18n'
 import {
   getStaticFetch,
@@ -13,6 +13,7 @@ import {
 export {
   api,
   fetchAPI,
+  genDefaultFetchAPI,
   getStaticFetch,
   getStaticInternal,
   joinStaticProps,

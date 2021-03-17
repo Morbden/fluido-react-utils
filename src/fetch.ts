@@ -1,11 +1,21 @@
 import merge from 'deepmerge'
 
-type FetchAPIResult = { [key: string]: any }
+interface FetchAPIGeneric {
+  [key: string]: any
+}
 
-interface FetchAPIInterface {
-  (url: RequestInfo, options?: RequestInit): Promise<
-    [number, FetchAPIResult | FetchAPIResult[]]
-  >
+interface FetchAPIResult<T> {
+  status: number
+  statusText: string
+  data: T | string
+}
+
+interface FetchAPIInterface<T = FetchAPIGeneric> {
+  (url: RequestInfo, options?: RequestInit): Promise<FetchAPIResult<T>>
+}
+
+interface GenDefaultFetchAPIInterface<T = FetchAPIGeneric> {
+  (data: T): FetchAPIResult<T>
 }
 
 export const fetchAPI: FetchAPIInterface = async (url, options = {}) => {
@@ -26,9 +36,26 @@ export const fetchAPI: FetchAPIInterface = async (url, options = {}) => {
     const jsonType = /application\/json/g.test(
       response.headers.get('content-type'),
     )
-    return Promise.all([
-      response.status,
-      jsonType ? response.json() : response.text(),
-    ])
+    if (jsonType) {
+      return Promise.resolve({
+        status: response.status,
+        statusText: response.statusText,
+        data: response.json(),
+      })
+    } else {
+      return Promise.resolve({
+        status: response.status,
+        statusText: response.statusText,
+        data: response.text(),
+      })
+    }
   })
+}
+
+export const genDefaultFetchAPI: GenDefaultFetchAPIInterface = (data) => {
+  return {
+    status: 200,
+    statusText: 'OK',
+    data,
+  }
 }
