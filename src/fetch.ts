@@ -4,21 +4,10 @@ interface FetchAPIGeneric {
   [key: string]: any
 }
 
-interface FetchAPIResult<T> {
-  status: number
-  statusText: string
-  data: T | string
-}
-
-interface FetchAPIInterface<T = FetchAPIGeneric> {
-  (url: RequestInfo, options?: RequestInit): Promise<FetchAPIResult<T>>
-}
-
-interface GenDefaultFetchAPIInterface<T = FetchAPIGeneric> {
-  (data: T): FetchAPIResult<T>
-}
-
-export const fetchAPI: FetchAPIInterface = async (url, options = {}) => {
+export const fetchAPI = async <T = FetchAPIGeneric>(
+  url: RequestInfo,
+  options: RequestInit = {},
+) => {
   return fetch(
     url,
     merge(
@@ -40,19 +29,19 @@ export const fetchAPI: FetchAPIInterface = async (url, options = {}) => {
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        data: response.json(),
+        data: (await response.json()) as T,
       })
     } else {
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        data: response.text(),
+        data: await response.text(),
       })
     }
   })
 }
 
-export const genDefaultFetchAPI: GenDefaultFetchAPIInterface = (data) => {
+export const genDefaultFetchAPI = <T = FetchAPIGeneric>(data: T) => {
   return {
     status: 200,
     statusText: 'OK',
