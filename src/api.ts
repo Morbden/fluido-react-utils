@@ -1,28 +1,39 @@
 import cookie from 'cookie'
 import cors from 'cors'
 import { RequestHandler } from 'express-serve-static-core'
-import { app as FirebaseApp, auth as FirebaseAuth } from 'firebase-admin'
+import {
+  app as FirebaseApp,
+  auth as FirebaseAuth,
+  database as FirebaseDatabase,
+} from 'firebase-admin'
+import { IncomingMessage } from 'http'
 import { NextApiRequest, NextApiResponse } from 'next'
-
-interface CookieSetType {
-  (key: string, value: any, opt?: object): void
-}
 
 export interface AppResponse<T = any>
   extends Express.Response,
     NextApiResponse<T> {
-  cookie: CookieSetType
+  cookie(key: string, value: any, opt?: object): void
 }
 
-export interface AppRequest extends Express.Request, NextApiRequest {
+interface GenericInterface<T = any> {
+  [key: string]: T
+}
+
+export interface AppRequest<Q = GenericInterface, B = GenericInterface>
+  extends Express.Request,
+    IncomingMessage {
   token?: string
-  claimsRef: any
-  userRef: any
+  query: Q
+  body: B
+  env: GenericInterface<string>
+  cookies: GenericInterface<string>
+  preview?: boolean
+  previewData?: any
+  claimsRef: FirebaseDatabase.Reference
+  userRef: FirebaseDatabase.Reference
   user: FirebaseAuth.DecodedIdToken
   automation: boolean
-  claims: {
-    [key: string]: any
-  }
+  claims: GenericInterface
 }
 
 export interface AppNext {
@@ -60,7 +71,7 @@ export const MiddlewareWrapper: MiddlewareWrapperType = (...routes) => async (
   request,
   response,
 ) => {
-  const setCookie: CookieSetType = (key, value, opt = {}) => {
+  response.cookie = (key, value, opt = {}) => {
     const cookieSerialize = cookie.serialize(key, value, {
       path: '/',
       ...opt,
@@ -68,8 +79,6 @@ export const MiddlewareWrapper: MiddlewareWrapperType = (...routes) => async (
 
     response.setHeader('Set-Cookie', cookieSerialize)
   }
-
-  response.cookie = setCookie
 
   await [cors()].concat(routes).reduce(
     (promise: Promise<any>, fn) =>
