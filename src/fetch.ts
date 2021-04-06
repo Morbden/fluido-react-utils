@@ -29,13 +29,13 @@ export const fetchAPI = async <T = FetchAPIGeneric>(
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        data: (await response.json()) as T,
+        json: ((await response.json()) as T) || null,
       })
     } else {
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        data: await response.text(),
+        text: (await response.text()) || null,
       })
     }
   })
@@ -45,6 +45,9 @@ export const genDefaultFetchAPI = <T = FetchAPIGeneric>(data: T) => {
   return {
     status: 200,
     statusText: 'OK',
-    data,
+    ...(typeof data === 'string' ? { text: data } : { json: data }),
   }
 }
+
+export const fetcherSWR = (url: RequestInfo, options: RequestInit = {}) =>
+  fetchAPI(url, options)
