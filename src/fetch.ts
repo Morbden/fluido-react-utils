@@ -23,19 +23,23 @@ export const fetchAPI = async <T = FetchAPIGeneric>(
     ),
   ).then(async (response) => {
     const jsonType = /application\/json/g.test(
-      response.headers.get('content-type'),
+      response.headers.get('content-type') || '',
     )
+    const text = await response.text()
+
     if (jsonType) {
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        json: ((await response.json()) as T) || null,
+        json: JSON.parse(text),
+        text,
       })
     } else {
       return Promise.resolve({
         status: response.status,
         statusText: response.statusText,
-        text: (await response.text()) || null,
+        json: null,
+        text,
       })
     }
   })
